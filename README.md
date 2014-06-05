@@ -1,4 +1,4 @@
 Rocks.Caching
 =============
 
-Caching abstraction library.
+Cache abstraction library.
