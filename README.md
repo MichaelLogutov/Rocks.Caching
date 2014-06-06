@@ -53,20 +53,16 @@ internal class UsersService : IUsersService
 	public int GetUsersCount ()
 	{
 		var result = this.cache.Get ("UsersCount",
-			                            () => new CachableResult<int> (GetUsersCountFromDb (),
+			                            () => new CachableResult<int> (this.GetUsersCountFromDb (),
 			                            		new CachingParameters (TimeSpan.FromMinutes (15))));
 
 		return result;
 	}
-
-
-	private static int GetUsersCountFromDb ()
-	{
-		Thread.Sleep (TimeSpan.FromSeconds (1));
-		return Database.UsersCount;
-	}
 }
 ```
+
+## More information
+You can read more about Rocks.Caching [here](http://michaellogutov.com/tag/rocks-caching/).
 
 ## NuGet package
 You can install nuget package for Rocks.Caching here: https://www.nuget.org/packages/Rocks.Caching/
