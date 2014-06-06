@@ -23,11 +23,11 @@ Choose a provider and register it in application root. This is an example to do 
 ```csharp
 public class Global : HttpApplication
 {
-  protected void Application_Start (object sender, EventArgs e)
+	protected void Application_Start (object sender, EventArgs e)
 	{
-	  // ...
-  	container.RegisterSingle<ICacheProvider> (new WebCacheProvider ());
-  	// ...
+		// ...
+  		container.RegisterSingle<ICacheProvider> (new WebCacheProvider ());
+		// ...
 	}
 }
 
@@ -43,8 +43,8 @@ internal class UsersService : IUsersService
 
 	public UsersService (ICacheProvider cache)
 	{
-	  if (cache == null)
-		  throw new ArgumentNullException ("cache");
+		if (cache == null)
+			throw new ArgumentNullException ("cache");
 		  
 		this.cache = cache;
 	}
@@ -53,7 +53,8 @@ internal class UsersService : IUsersService
 	public int GetUsersCount ()
 	{
 		var result = this.cache.Get ("UsersCount",
-			                            () => new CachableResult<int> (GetUsersCountFromDb (), new CachingParameters (TimeSpan.FromMinutes (15))));
+			                            () => new CachableResult<int> (GetUsersCountFromDb (),
+			                            		new CachingParameters (TimeSpan.FromMinutes (15))));
 
 		return result;
 	}
