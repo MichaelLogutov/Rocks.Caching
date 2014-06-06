@@ -61,6 +61,42 @@ internal class UsersService : IUsersService
 }
 ```
 
+## Correct implementation of cache miss handling in multithreaded environment
+This issue explained here: [Caching in multi thread application – it’s not that simple](http://michaellogutov.com/caching-in-multi-thread-application-its-not-that-simple/)
+
+For your code to correctly handle cache miss in multithreaded scenarios simply call Get extension method that works with ICacheProvider (and so supports any implementation of it):
+```csharp
+public int GetUsersCount ()
+{
+    var result = this.cache.Get ("UsersCount", () =>
+    {
+        var users_count = GetUsersCountFromDb ();
+        var cp = new CachingParameters (TimeSpan.FromMinutes (15));
+ 
+        return new CachableResult<int> (users_count, cp);
+    });
+ 
+    return result;
+}
+```
+
+Async is supported:
+
+```csharp
+public async Task<int> GetUsersCountAsync ()
+{
+    var result = await this.cache
+        .GetAsync ("UsersCount", () => Task.Run (async () =>
+        {
+            var users_count = await GetUsersCountFromDbAsync ();
+            var cp = new CachingParameters (TimeSpan.FromMinutes (15));
+            return new CachableResult<int> (users_count, cp);
+        }));
+ 
+    return result;
+}
+```
+
 ## More information
 You can read more about Rocks.Caching [here](http://michaellogutov.com/tag/rocks-caching/).
 
