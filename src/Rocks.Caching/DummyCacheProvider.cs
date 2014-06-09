@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Rocks.Caching
@@ -14,7 +15,7 @@ namespace Rocks.Caching
 
 		public DummyCacheProvider ()
 		{
-			this.Items = new Dictionary<string, object> ();
+			this.Items = new ConcurrentDictionary<string, object> ();
 		}
 
 
@@ -26,6 +27,7 @@ namespace Rocks.Caching
 		public virtual object Get (string key)
 		{
 			object value;
+
 			if (!this.Items.TryGetValue (key, out value))
 				return null;
 
