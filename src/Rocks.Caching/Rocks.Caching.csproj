@@ -71,6 +71,7 @@
     <Compile Include="CachePriority.cs" />
     <Compile Include="CachingParameters.cs" />
     <Compile Include="DummyCacheProvider.cs" />
+    <Compile Include="ExceptionResult.cs" />
     <Compile Include="ICachable.cs" />
     <Compile Include="ICacheKeyProvider.cs" />
     <Compile Include="ICacheProvider.cs" />

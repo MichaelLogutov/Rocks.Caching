@@ -56,7 +56,7 @@ namespace Rocks.Caching.Tests.GetWithLock
 
 			Func<Task<CachableResult<string>>> create_result = () => Task.Run (async () =>
 			{
-				exec_count++;
+				Interlocked.Increment (ref exec_count);
 
 				await Task.Delay (TimeSpan.FromMilliseconds (300));
 
@@ -99,6 +99,72 @@ namespace Rocks.Caching.Tests.GetWithLock
 
 			exec_count.Should ().Be (1);
 
+			CachedResults.Locks.Should ().BeEmpty ();
+		}
+
+
+		[TestMethod]
+		public void MultiThreadWithConcurency_GetResultThrows_BothThrows ()
+		{
+			// arrange
+			var cache = new CacheProviderStub ();
+
+			var exec_count = 0;
+			var exception_count = 0;
+			var start_event = new ManualResetEvent (false);
+
+			Func<Task<CachableResult<string>>> create_result = () => Task.Run<CachableResult<string>> (async () =>
+			{
+				Interlocked.Increment (ref exec_count);
+
+				await Task.Delay (TimeSpan.FromMilliseconds (300));
+
+				throw new InvalidOperationException ();
+
+				return null;
+			});
+
+
+			var t1 = new Thread (() =>
+			{
+				start_event.WaitOne ();
+				try
+				{
+					cache.GetAsync ("Test", create_result).Wait ();
+				}
+				catch (AggregateException)
+				{
+					Interlocked.Increment (ref exception_count);
+				}
+			});
+
+			var t2 = new Thread (() =>
+			{
+				start_event.WaitOne ();
+				try
+				{
+					cache.GetAsync ("Test", create_result).Wait ();
+				}
+				catch (AggregateException)
+				{
+					Interlocked.Increment (ref exception_count);
+				}
+			});
+
+
+			// act
+			t1.Start ();
+			t2.Start ();
+
+			start_event.Set ();
+
+			t1.Join ();
+			t2.Join ();
+
+
+			// assert
+			exec_count.Should ().Be (1);
+			exception_count.Should ().Be (2);
 			CachedResults.Locks.Should ().BeEmpty ();
 		}
 

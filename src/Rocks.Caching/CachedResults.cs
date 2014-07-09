@@ -76,12 +76,25 @@ namespace Rocks.Caching
 					res = cached_result_lock.Result;
 				else if (cached_result_lock.TryStartExecuting ())
 				{
-					var result = createResult ();
-					res = ProceedResult (cache, key, result, cached_result_lock);
+					try
+					{
+						var result = createResult ();
+						res = ProceedResult (cache, key, result, cached_result_lock);
+					}
+					catch (Exception ex)
+					{
+						ProceedExceptionResult (key, ex, cached_result_lock);
+						throw;
+					}
 				}
 				else
 				{
 					cached_result_lock.WaitForCompletion ();
+
+					var exception_result = cached_result_lock.Result as ExceptionResult;
+					if (exception_result != null)
+						throw exception_result.Exception;
+
 					res = cached_result_lock.Result;
 				}
 			}
@@ -128,12 +141,25 @@ namespace Rocks.Caching
 					res = cached_result_lock.Result;
 				else if (cached_result_lock.TryStartExecuting ())
 				{
-					var result = await createResult ();
-					res = ProceedResult (cache, key, result, cached_result_lock);
+					try
+					{
+						var result = await createResult ();
+						res = ProceedResult (cache, key, result, cached_result_lock);
+					}
+					catch (Exception ex)
+					{
+						ProceedExceptionResult (key, ex, cached_result_lock);
+						throw;
+					}
 				}
 				else
 				{
 					cached_result_lock.WaitForCompletion ();
+
+					var exception_result = cached_result_lock.Result as ExceptionResult;
+					if (exception_result != null)
+						throw exception_result.Exception;
+
 					res = cached_result_lock.Result;
 				}
 			}
@@ -145,10 +171,7 @@ namespace Rocks.Caching
 
 		#region Private methods
 
-		private static object ProceedResult<T> (ICacheProvider cache,
-		                                        string key,
-		                                        CachableResult<T> result,
-		                                        CachedResultLock cached_result_lock)
+		private static object ProceedResult<T> (ICacheProvider cache, string key, CachableResult<T> result, CachedResultLock cachedResultLock)
 		{
 			object res = null;
 
@@ -169,12 +192,25 @@ namespace Rocks.Caching
 				cache.Add (key, res, result.Parameters);
 			}
 
-			cached_result_lock.EndExecution (res);
+			cachedResultLock.EndExecution (res);
 
 			// remove the lock object
 			CachedResultLock removed_cached_result_lock;
 			Locks.TryRemove (key, out removed_cached_result_lock);
+
 			return res;
+		}
+
+
+		private static void ProceedExceptionResult (string key, Exception exception, CachedResultLock cachedResultLock)
+		{
+			var result = new ExceptionResult { Exception = exception };
+
+			cachedResultLock.EndExecution (result);
+
+			// remove the lock object
+			CachedResultLock removed_cached_result_lock;
+			Locks.TryRemove (key, out removed_cached_result_lock);
 		}
 
 		#endregion
