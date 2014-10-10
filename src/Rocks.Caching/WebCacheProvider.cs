@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.Caching;
 
@@ -42,6 +43,8 @@ namespace Rocks.Caching
 			};
 
 		private readonly Cache cache;
+
+		private static long DependencyCacheValue;
 
 		#endregion
 
@@ -162,8 +165,10 @@ namespace Rocks.Caching
 				if (this.cache[key] != null)
 					continue;
 
+				Interlocked.Increment (ref DependencyCacheValue);
+
 				this.cache.Add (key,
-				                true,
+				                DependencyCacheValue,
 				                null,
 				                Cache.NoAbsoluteExpiration,
 				                Cache.NoSlidingExpiration,
