@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text;
 using FastMember;
 
@@ -9,11 +10,13 @@ namespace Rocks.Caching
 {
 	public static class CacheKeyBuilder
 	{
+		#region Static methods
+
 		/// <summary>
-		/// Creates a cache key in "{args1}{args2}{args3} ... ect." format.
+		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
 		/// <param name="args1">An argument (IEnumerable objects will be represented as concatinated string of it's items).</param>
-		[DebuggerStepThrough]
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public static string Create (object args1)
 		{
 			if (args1 == null)
@@ -21,78 +24,108 @@ namespace Rocks.Caching
 
 			var sb = new StringBuilder ();
 
-			sb.Append ('{'); Append (sb, args1); sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args1);
+			sb.Append ('}');
 
 			return sb.ToString ();
 		}
 
 
 		/// <summary>
-		/// Creates a cache key in "{args1}{args2}{args3} ... ect." format.
+		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
 		/// <param name="args1">An argument (IEnumerable objects will be represented as concatinated string of it's items).</param>
 		/// <param name="args2">An argument (IEnumerable objects will be represented as concatinated string of it's items).</param>
-		[DebuggerStepThrough]
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public static string Create (object args1, object args2)
 		{
 			var sb = new StringBuilder ();
 
-			sb.Append ('{'); Append (sb, args1); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args2); sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args1);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args2);
+			sb.Append ('}');
 
 			return sb.ToString ();
 		}
 
 
 		/// <summary>
-		/// Creates a cache key in "{args1}{args2}{args3} ... ect." format.
+		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
 		/// <param name="args1">An argument (IEnumerable objects will be represented as concatinated string of it's items).</param>
 		/// <param name="args2">An argument (IEnumerable objects will be represented as concatinated string of it's items).</param>
 		/// <param name="args3">An argument (IEnumerable objects will be represented as concatinated string of it's items).</param>
-		[DebuggerStepThrough]
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public static string Create (object args1, object args2, object args3)
 		{
 			var sb = new StringBuilder ();
 
-			sb.Append ('{'); Append (sb, args1); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args2); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args3); sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args1);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args2);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args3);
+			sb.Append ('}');
 
 			return sb.ToString ();
 		}
 
 
 		/// <summary>
-		/// Creates a cache key in "{args1}{args2}{args3} ... ect." format.
+		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
-		[DebuggerStepThrough]
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public static string Create (object args1, object args2, object args3, object args4)
 		{
 			var sb = new StringBuilder ();
 
-			sb.Append ('{'); Append (sb, args1); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args2); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args3); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args4); sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args1);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args2);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args3);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args4);
+			sb.Append ('}');
 
 			return sb.ToString ();
 		}
 
 
 		/// <summary>
-		/// Creates a cache key in "{args1}{args2}{args3} ... ect." format.
+		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
-		[DebuggerStepThrough]
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public static string Create (object args1, object args2, object args3, object args4, object args5)
 		{
 			var sb = new StringBuilder ();
 
-			sb.Append ('{'); Append (sb, args1); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args2); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args3); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args4); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args5); sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args1);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args2);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args3);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args4);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args5);
+			sb.Append ('}');
 
 			return sb.ToString ();
 		}
@@ -100,19 +133,31 @@ namespace Rocks.Caching
 
 
 		/// <summary>
-		/// Creates a cache key in "{args1}{args2}{args3} ... ect." format.
+		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
-		[DebuggerStepThrough]
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public static string Create (object args1, object args2, object args3, object args4, object args5, object args6)
 		{
 			var sb = new StringBuilder ();
 
-			sb.Append ('{'); Append (sb, args1); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args2); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args3); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args4); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args5); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args6); sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args1);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args2);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args3);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args4);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args5);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args6);
+			sb.Append ('}');
 
 			return sb.ToString ();
 		}
@@ -120,20 +165,34 @@ namespace Rocks.Caching
 
 
 		/// <summary>
-		/// Creates a cache key in "{args1}{args2}{args3} ... ect." format.
+		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
-		[DebuggerStepThrough]
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public static string Create (object args1, object args2, object args3, object args4, object args5, object args6, object args7)
 		{
 			var sb = new StringBuilder ();
 
-			sb.Append ('{'); Append (sb, args1); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args2); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args3); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args4); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args5); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args6); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args7); sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args1);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args2);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args3);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args4);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args5);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args6);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args7);
+			sb.Append ('}');
 
 			return sb.ToString ();
 		}
@@ -141,21 +200,37 @@ namespace Rocks.Caching
 
 
 		/// <summary>
-		/// Creates a cache key in "{args1}{args2}{args3} ... ect." format.
+		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
-		[DebuggerStepThrough]
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public static string Create (object args1, object args2, object args3, object args4, object args5, object args6, object args7, object args8)
 		{
 			var sb = new StringBuilder ();
 
-			sb.Append ('{'); Append (sb, args1); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args2); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args3); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args4); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args5); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args6); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args7); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args8); sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args1);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args2);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args3);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args4);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args5);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args6);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args7);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args8);
+			sb.Append ('}');
 
 			return sb.ToString ();
 		}
@@ -163,22 +238,48 @@ namespace Rocks.Caching
 
 
 		/// <summary>
-		/// Creates a cache key in "{args1}{args2}{args3} ... ect." format.
+		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
-		[DebuggerStepThrough]
-		public static string Create (object args1, object args2, object args3, object args4, object args5, object args6, object args7, object args8, object args9)
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
+		public static string Create (object args1,
+		                             object args2,
+		                             object args3,
+		                             object args4,
+		                             object args5,
+		                             object args6,
+		                             object args7,
+		                             object args8,
+		                             object args9)
 		{
 			var sb = new StringBuilder ();
 
-			sb.Append ('{'); Append (sb, args1); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args2); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args3); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args4); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args5); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args6); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args7); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args8); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args9); sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args1);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args2);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args3);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args4);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args5);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args6);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args7);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args8);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args9);
+			sb.Append ('}');
 
 			return sb.ToString ();
 		}
@@ -186,47 +287,109 @@ namespace Rocks.Caching
 
 
 		/// <summary>
-		/// Creates a cache key in "{args1}{args2}{args3} ... ect." format.
+		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
-		[DebuggerStepThrough]
-		public static string Create (object args1, object args2, object args3, object args4, object args5, object args6, object args7, object args8, object args9, object args10)
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
+		public static string Create (object args1,
+		                             object args2,
+		                             object args3,
+		                             object args4,
+		                             object args5,
+		                             object args6,
+		                             object args7,
+		                             object args8,
+		                             object args9,
+		                             object args10)
 		{
 			var sb = new StringBuilder ();
 
-			sb.Append ('{'); Append (sb, args1); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args2); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args3); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args4); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args5); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args6); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args7); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args8); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args9); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args10); sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args1);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args2);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args3);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args4);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args5);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args6);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args7);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args8);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args9);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args10);
+			sb.Append ('}');
 
 			return sb.ToString ();
 		}
 
 
 		/// <summary>
-		/// Creates a cache key in "{args1}{args2}{args3} ... ect." format.
+		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
-		[DebuggerStepThrough]
-		public static string Create (object args1, object args2, object args3, object args4, object args5, object args6, object args7, object args8, object args9, object args10, object args11, params object[] args)
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
+		public static string Create (object args1,
+		                             object args2,
+		                             object args3,
+		                             object args4,
+		                             object args5,
+		                             object args6,
+		                             object args7,
+		                             object args8,
+		                             object args9,
+		                             object args10,
+		                             object args11,
+		                             params object[] args)
 		{
 			var sb = new StringBuilder ();
 
-			sb.Append ('{'); Append (sb, args1); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args2); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args3); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args4); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args5); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args6); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args7); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args8); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args9); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args10); sb.Append ('}');
-			sb.Append ('{'); Append (sb, args11); sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args1);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args2);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args3);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args4);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args5);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args6);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args7);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args8);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args9);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args10);
+			sb.Append ('}');
+			sb.Append ('{');
+			Append (sb, args11);
+			sb.Append ('}');
 
 			if (args != null)
 			{
@@ -243,9 +406,9 @@ namespace Rocks.Caching
 
 
 		/// <summary>
-		/// Creates a cache key in "{property1}{property2}{property3} ... ect." format.
+		///     Creates a cache key in "{property1}{property2}{property3} ... ect." format.
 		/// </summary>
-		[DebuggerStepThrough]
+		[DebuggerStepThrough, MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public static string CreateFromObjectProperties (object obj, string prefix = null)
 		{
 			if (obj == null)
@@ -267,6 +430,7 @@ namespace Rocks.Caching
 			return sb.ToString ();
 		}
 
+		#endregion
 
 		#region Private methods
 

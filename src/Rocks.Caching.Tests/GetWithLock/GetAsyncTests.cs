@@ -58,7 +58,7 @@ namespace Rocks.Caching.Tests.GetWithLock
 			{
 				Interlocked.Increment (ref exec_count);
 
-				await Task.Delay (TimeSpan.FromMilliseconds (300));
+				await Task.Delay (TimeSpan.FromMilliseconds (500));
 
 				var result = new CachableResult<string> ("aaa", new CachingParameters (TimeSpan.FromMinutes (1)));
 
@@ -99,7 +99,7 @@ namespace Rocks.Caching.Tests.GetWithLock
 
 			exec_count.Should ().Be (1);
 
-			CachedResults.Locks.Should ().BeEmpty ();
+			GetWithLockExtensions.Locks.Should ().BeEmpty ();
 		}
 
 
@@ -117,11 +117,9 @@ namespace Rocks.Caching.Tests.GetWithLock
 			{
 				Interlocked.Increment (ref exec_count);
 
-				await Task.Delay (TimeSpan.FromMilliseconds (300));
+				await Task.Delay (TimeSpan.FromMilliseconds (500));
 
 				throw new InvalidOperationException ();
-
-				return null;
 			});
 
 
@@ -165,7 +163,7 @@ namespace Rocks.Caching.Tests.GetWithLock
 			// assert
 			exec_count.Should ().Be (1);
 			exception_count.Should ().Be (2);
-			CachedResults.Locks.Should ().BeEmpty ();
+			GetWithLockExtensions.Locks.Should ().BeEmpty ();
 		}
 
 
@@ -286,7 +284,7 @@ namespace Rocks.Caching.Tests.GetWithLock
 			cache.Values.Should ().HaveCount (2);
 			exec_count_a.Should ().Be (1);
 			exec_count_b.Should ().Be (1);
-			CachedResults.Locks.Should ().BeEmpty ();
+			GetWithLockExtensions.Locks.Should ().BeEmpty ();
 		}
 	}
 }

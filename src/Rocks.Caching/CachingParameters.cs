@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -8,6 +9,7 @@ namespace Rocks.Caching
 	/// <summary>
 	///     Specifying parameters for caching an object.
 	/// </summary>
+	[DebuggerDisplay ("{Expiration}, Sliding = {Sliding}, Priority = {Priority}")]
 	public sealed class CachingParameters
 	{
 		#region Constants
@@ -87,6 +89,69 @@ namespace Rocks.Caching
 
 		#endregion
 
+		#region Static methods
+
+		/// <summary>
+		///     Creates <see cref="CachingParameters" /> instance with expiration of <paramref name="milliseconds" />.
+		/// </summary>
+		public static CachingParameters FromMilliseconds (double milliseconds,
+		                                                  bool sliding = false,
+		                                                  IEnumerable<string> dependencyKeys = null,
+		                                                  CachePriority? priority = null)
+		{
+			return new CachingParameters (TimeSpan.FromMilliseconds (milliseconds), sliding, dependencyKeys, priority);
+		}
+
+
+		/// <summary>
+		///     Creates <see cref="CachingParameters" /> instance with expiration of <paramref name="seconds" />.
+		/// </summary>
+		public static CachingParameters FromSeconds (double seconds,
+		                                             bool sliding = false,
+		                                             IEnumerable<string> dependencyKeys = null,
+		                                             CachePriority? priority = null)
+		{
+			return new CachingParameters (TimeSpan.FromSeconds (seconds), sliding, dependencyKeys, priority);
+		}
+
+
+		/// <summary>
+		///     Creates <see cref="CachingParameters" /> instance with expiration of <paramref name="minutes" />.
+		/// </summary>
+		public static CachingParameters FromMinutes (double minutes,
+		                                             bool sliding = false,
+		                                             IEnumerable<string> dependencyKeys = null,
+		                                             CachePriority? priority = null)
+		{
+			return new CachingParameters (TimeSpan.FromMinutes (minutes), sliding, dependencyKeys, priority);
+		}
+
+
+		/// <summary>
+		///     Creates <see cref="CachingParameters" /> instance with expiration of <paramref name="hours" />.
+		/// </summary>
+		public static CachingParameters FromHours (double hours,
+		                                           bool sliding = false,
+		                                           IEnumerable<string> dependencyKeys = null,
+		                                           CachePriority? priority = null)
+		{
+			return new CachingParameters (TimeSpan.FromHours (hours), sliding, dependencyKeys, priority);
+		}
+
+
+		/// <summary>
+		///     Creates <see cref="CachingParameters" /> instance with expiration of <paramref name="days" />.
+		/// </summary>
+		public static CachingParameters FromDays (double days,
+		                                          bool sliding = false,
+		                                          IEnumerable<string> dependencyKeys = null,
+		                                          CachePriority? priority = null)
+		{
+			return new CachingParameters (TimeSpan.FromDays (days), sliding, dependencyKeys, priority);
+		}
+
+		#endregion
+
 		#region Public methods
 
 		/// <summary>
@@ -109,7 +174,9 @@ namespace Rocks.Caching
 			if (this.NoCaching)
 				return "no caching";
 
-			var result = this.expiration + (this.sliding ? " sliding" : " absolute");
+			var result = (this.sliding ? "sliding expiration " : "absolute expiration ") +
+			             this.expiration +
+			             ", priority " + this.priority;
 
 			return result;
 		}

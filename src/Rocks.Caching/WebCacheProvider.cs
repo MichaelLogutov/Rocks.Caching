@@ -165,10 +165,10 @@ namespace Rocks.Caching
 				if (this.cache[key] != null)
 					continue;
 
-				Interlocked.Increment (ref DependencyCacheValue);
+				var dependency_value = Interlocked.Increment (ref DependencyCacheValue);
 
 				this.cache.Add (key,
-				                DependencyCacheValue,
+				                dependency_value,
 				                null,
 				                Cache.NoAbsoluteExpiration,
 				                Cache.NoSlidingExpiration,

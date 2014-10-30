@@ -66,7 +66,7 @@
     <Compile Include="CachableResult.cs" />
     <Compile Include="CacheDependencyKeyBuilder.cs" />
     <Compile Include="CachedResultLock.cs" />
-    <Compile Include="CachedResults.cs" />
+    <Compile Include="GetWithLockExtensions.cs" />
     <Compile Include="CacheKeyBuilder.cs" />
     <Compile Include="CachePriority.cs" />
     <Compile Include="CachingParameters.cs" />

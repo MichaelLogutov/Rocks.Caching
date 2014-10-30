@@ -1,5 +1,4 @@
-﻿
-namespace Rocks.Caching
+﻿namespace Rocks.Caching
 {
 	public enum CachePriority
 	{

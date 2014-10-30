@@ -10,7 +10,7 @@ namespace Rocks.Caching
 	///     A helpers class that can wrap operation of retrieving cached object value into thread safe lock
 	///     to ensure that creation of cached value will be performed only once when needed.
 	/// </summary>
-	public static class CachedResults
+	public static class GetWithLockExtensions
 	{
 		#region Private fields
 
@@ -70,33 +70,33 @@ namespace Rocks.Caching
 			{
 				// cache miss - obtain lock to execute createResult
 				// only once among possible concurrent requests
-				var cached_result_lock = Locks.GetOrAdd (key, x => new CachedResultLock ());
+				var cached_result_lock = AcquireCachedResultLock (key);
 
-				if (cached_result_lock.Executed)
-					res = cached_result_lock.Result;
-				else if (cached_result_lock.TryStartExecuting ())
+				if (!cached_result_lock.IsExecuted)
 				{
 					try
 					{
 						var result = createResult ();
-						res = ProceedResult (cache, key, result, cached_result_lock);
+						ProceedResult (cache, key, cached_result_lock, result);
 					}
 					catch (Exception ex)
 					{
-						ProceedExceptionResult (key, ex, cached_result_lock);
+						ProceedExceptionResult (cached_result_lock, ex);
 						throw;
+					}
+					finally
+					{
+						ReleaseCachedResultLock (key, cached_result_lock);
 					}
 				}
 				else
-				{
-					cached_result_lock.WaitForCompletion ();
+					ReleaseCachedResultLock (key, cached_result_lock);
 
-					var exception_result = cached_result_lock.Result as ExceptionResult;
-					if (exception_result != null)
-						throw exception_result.Exception;
+				var exception_result = cached_result_lock.Result as ExceptionResult;
+				if (exception_result != null)
+					throw exception_result.Exception;
 
-					res = cached_result_lock.Result;
-				}
+				res = cached_result_lock.Result;
 			}
 
 			return res != EmptyResult ? (T) res : default (T);
@@ -135,33 +135,33 @@ namespace Rocks.Caching
 			{
 				// cache miss - obtain lock to execute createResult
 				// only once among possible concurrent requests
-				var cached_result_lock = Locks.GetOrAdd (key, x => new CachedResultLock ());
+				var cached_result_lock = AcquireCachedResultLock (key);
 
-				if (cached_result_lock.Executed)
-					res = cached_result_lock.Result;
-				else if (cached_result_lock.TryStartExecuting ())
+				if (!cached_result_lock.IsExecuted)
 				{
 					try
 					{
-						var result = await createResult ();
-						res = ProceedResult (cache, key, result, cached_result_lock);
+						var result = await createResult ().ConfigureAwait (false);
+						ProceedResult (cache, key, cached_result_lock, result);
 					}
 					catch (Exception ex)
 					{
-						ProceedExceptionResult (key, ex, cached_result_lock);
+						ProceedExceptionResult (cached_result_lock, ex);
 						throw;
+					}
+					finally
+					{
+						ReleaseCachedResultLock (key, cached_result_lock);
 					}
 				}
 				else
-				{
-					cached_result_lock.WaitForCompletion ();
+					ReleaseCachedResultLock (key, cached_result_lock);
 
-					var exception_result = cached_result_lock.Result as ExceptionResult;
-					if (exception_result != null)
-						throw exception_result.Exception;
+				var exception_result = cached_result_lock.Result as ExceptionResult;
+				if (exception_result != null)
+					throw exception_result.Exception;
 
-					res = cached_result_lock.Result;
-				}
+				res = cached_result_lock.Result;
 			}
 
 			return res != EmptyResult ? (T) res : default (T);
@@ -171,46 +171,57 @@ namespace Rocks.Caching
 
 		#region Private methods
 
-		private static object ProceedResult<T> (ICacheProvider cache, string key, CachableResult<T> result, CachedResultLock cachedResultLock)
+		private static CachedResultLock AcquireCachedResultLock (string key)
 		{
-			object res = null;
+			var result = Locks.GetOrAdd (key, x => new CachedResultLock ());
 
-			if (result != null)
-			{
-				// if result.Result is null, it's still a result. So we need to cache it as EmptyResult object
-				// so the next time we didn't get null from cache and had to go create result
-				// once again. But we can do it only if dependency keys are null/empty, or they don't include
-				// result data, because otherwise will be caching EmptyResult object
-				// with dependeny key calculated for null object which is incorrect behavior.
+			result.Mutex.Wait ();
 
-				res = result.Result;
-				if (res == null && (result.Parameters.DependencyKeys == null ||
-				                    !result.Parameters.DependencyKeys.Any () ||
-				                    !result.DependencyKeysIncludeResult))
-					res = EmptyResult;
-
-				cache.Add (key, res, result.Parameters);
-			}
-
-			cachedResultLock.EndExecution (res);
-
-			// remove the lock object
-			CachedResultLock removed_cached_result_lock;
-			Locks.TryRemove (key, out removed_cached_result_lock);
-
-			return res;
+			return result;
 		}
 
 
-		private static void ProceedExceptionResult (string key, Exception exception, CachedResultLock cachedResultLock)
+		private static void ReleaseCachedResultLock (string key, CachedResultLock cachedResultLock)
+		{
+			cachedResultLock.Mutex.Release ();
+
+			CachedResultLock removed_cached_result_lock;
+			Locks.TryRemove (key, out removed_cached_result_lock);
+		}
+
+
+		private static void ProceedResult<T> (ICacheProvider cache, string key, CachedResultLock cachedResultLock, CachableResult<T> cachableResult)
+		{
+			object result = null;
+
+			if (cachableResult != null)
+			{
+				// if cachableResult.Result is null, it's still a result. So we need to cache it as EmptyResult object
+				// so the next time we didn't get null from cache and had to go create result
+				// once again. But we can do it only if dependency keys are null/empty, or they don't include
+				// cachableResult data, because otherwise will be caching EmptyResult object
+				// with dependeny key calculated for null object which is incorrect behavior.
+
+				result = cachableResult.Result;
+				if (result == null && (cachableResult.Parameters.DependencyKeys == null ||
+				                       !cachableResult.Parameters.DependencyKeys.Any () ||
+				                       !cachableResult.DependencyKeysIncludeResult))
+					result = EmptyResult;
+
+				cache.Add (key, result, cachableResult.Parameters);
+			}
+
+			cachedResultLock.Result = result;
+			cachedResultLock.IsExecuted = true;
+		}
+
+
+		private static void ProceedExceptionResult (CachedResultLock cachedResultLock, Exception exception)
 		{
 			var result = new ExceptionResult { Exception = exception };
 
-			cachedResultLock.EndExecution (result);
-
-			// remove the lock object
-			CachedResultLock removed_cached_result_lock;
-			Locks.TryRemove (key, out removed_cached_result_lock);
+			cachedResultLock.Result = result;
+			cachedResultLock.IsExecuted = true;
 		}
 
 		#endregion
