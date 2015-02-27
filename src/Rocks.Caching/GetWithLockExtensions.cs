@@ -99,7 +99,10 @@ namespace Rocks.Caching
 				res = cached_result_lock.Result;
 			}
 
-			return res != EmptyResult ? (T) res : default (T);
+		    if (res != EmptyResult && res != null)
+		        return (T) res;
+
+            return default (T);
 		}
 
 
@@ -164,7 +167,10 @@ namespace Rocks.Caching
 				res = cached_result_lock.Result;
 			}
 
-			return res != EmptyResult ? (T) res : default (T);
+			if (res != EmptyResult && res != null)
+		        return (T) res;
+
+            return default (T);
 		}
 
 		#endregion

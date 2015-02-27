@@ -244,6 +244,33 @@ namespace Rocks.Caching.Tests.GetWithLock
 		}
 
 
+        [TestMethod]
+		public void ResultIsNull_ValueTypeResult_DoesNotCache ()
+		{
+			// arrange
+			var cache = new CacheProviderStub ();
+			var exec_count = 0;
+
+			var create_result = new Func<CachableResult<int>> (() =>
+			{
+				exec_count++;
+				return null;
+			});
+
+
+			// act
+			var result = cache.Get ("Test", create_result);
+			var result2 = cache.Get ("Test", create_result);
+
+
+			// assert
+			cache.Values.Should ().BeEmpty ();
+		    result.Should ().Be (0);
+			result2.Should ().Be (0);
+			exec_count.Should ().Be (2);
+		}
+
+
 		[TestMethod]
 		public void NestedCalls_ReturnsItem ()
 		{
