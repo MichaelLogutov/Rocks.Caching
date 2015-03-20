@@ -56,6 +56,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Moq.4.2.1502.0911\lib\net40\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="NCrunch.Framework, Version=2.13.0.5, Culture=neutral, PublicKeyToken=01d101bf6f3e0aea, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\NCrunch.Framework.2.13.0.5\lib\portable-windows8+net45\NCrunch.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.24.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AutoFixture.3.24.0\lib\net40\Ploeh.AutoFixture.dll</HintPath>
@@ -86,6 +90,7 @@
     <Compile Include="GetWithLock\GetTests.cs" />
     <Compile Include="CacheDependencyKeyBuilderTests.cs" />
     <Compile Include="CacheProviderTestBase.cs" />
+    <Compile Include="StaTaskScheduler.cs" />
     <Compile Include="WebCacheProviderTestS.cs" />
     <Compile Include="MemoryCacheProviderTests.cs" />
     <Compile Include="Stubs\CacheProviderStub.cs" />

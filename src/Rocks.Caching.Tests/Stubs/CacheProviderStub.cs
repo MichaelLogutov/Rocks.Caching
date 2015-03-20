@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 
 // ReSharper disable MemberCanBePrivate.Global
 namespace Rocks.Caching.Tests.Stubs
@@ -12,7 +12,7 @@ namespace Rocks.Caching.Tests.Stubs
 		}
 
 
-		public readonly Dictionary<string, CacheItem> Values = new Dictionary<string, CacheItem> ();
+		public readonly ConcurrentDictionary<string, CacheItem> Values = new ConcurrentDictionary<string, CacheItem> ();
 
 
 		public object Get (string key)
@@ -49,7 +49,8 @@ namespace Rocks.Caching.Tests.Stubs
 
 		public void Remove (string key)
 		{
-			this.Values.Remove (key);
+		    CacheItem value;
+		    this.Values.TryRemove (key, out value);
 		}
 	}
 }

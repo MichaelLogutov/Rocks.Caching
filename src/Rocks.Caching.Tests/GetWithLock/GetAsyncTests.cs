@@ -4,35 +4,52 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NCrunch.Framework;
 using Rocks.Caching.Tests.Stubs;
+using TimeoutAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TimeoutAttribute;
 
+// ReSharper disable PossibleMultipleEnumeration
 // ReSharper disable ImplicitlyCapturedClosure
 // ReSharper disable UnusedMember.Global
 
 namespace Rocks.Caching.Tests.GetWithLock
 {
-    [TestClass]
+    [TestClass, Serial, ExclusivelyUses ("GetWithLockExtensions.Locks")]
     public class GetAsyncTests
     {
         #region Public methods
 
-        [TestMethod]
-        public void SingleThread_InvokesGetValueFunctionOnce ()
+        [TestInitialize]
+        public void TestInitialize ()
+        {
+            GetWithLockExtensions.Locks.Clear ();
+        }
+
+
+        [TestCleanup]
+        public void TestCleanup ()
+        {
+            GetWithLockExtensions.Locks.Clear ();
+        }
+
+
+        [TestMethod, Timeout (5000)]
+        public async Task SingleThread_InvokesGetValueFunctionOnce ()
         {
             // arrange
             var cache = new CacheProviderStub ();
+            var cache_key = Guid.NewGuid ().ToString ();
             var exec_count = 0;
 
 
             // act
-            var actual = cache.GetAsync ("Test",
-                                         () => Task.Run (() =>
-                                                         {
-                                                             exec_count++;
-                                                             return new CachableResult<string> ("aaa",
-                                                                                                new CachingParameters (TimeSpan.FromMinutes (1)));
-                                                         }))
-                              .Result;
+            var actual = await cache.GetAsync
+                                   (cache_key,
+                                    () => Task.Run (() =>
+                                                    {
+                                                        exec_count++;
+                                                        return new CachableResult<string> ("aaa", CachingParameters.FromMinutes (1));
+                                                    }));
 
 
             // assert
@@ -40,102 +57,63 @@ namespace Rocks.Caching.Tests.GetWithLock
 
             cache.Values
                  .Should ().HaveCount (1)
-                 .And.ContainKey ("Test")
+                 .And.ContainKey (cache_key)
                  .WhichValue.Value.Should ().Be ("aaa");
 
             exec_count.Should ().Be (1);
+
+            GetWithLockExtensions.Locks.Should ().BeEmpty ();
         }
 
 
-        [TestMethod, Timeout (1000)]
+        [TestMethod, Timeout (5000)]
         public void TwoThreads_WithConcurency_InvokesGetValueFunctionOnce ()
         {
             MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test (2, sta: false);
         }
 
 
-        [TestMethod, Timeout (1000)]
-        public void TenThreads_WithConcurency_InvokesGetValueFunctionOnce ()
+        [TestMethod, Timeout (5000)]
+        public void FiveThreads_WithConcurency_InvokesGetValueFunctionOnce ()
         {
-            MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test (10, sta: false);
+            MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test (5, sta: false);
         }
 
 
-        [TestMethod, Timeout (1000)]
-        public void MaxThreads_WithConcurency_InvokesGetValueFunctionOnce ()
-        {
-            MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test (Environment.ProcessorCount, sta: false);
-        }
-
-
-        [TestMethod, Timeout (1000)]
-        public void TwoThreads_WithConcurency_STA_InvokesGetValueFunctionOnce ()
-        {
-            MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test (2, sta: true);
-        }
-
-
-        [TestMethod, Timeout (1000)]
-        public void TenThreads_WithConcurency_STA_InvokesGetValueFunctionOnce ()
-        {
-            MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test (10, sta: true);
-        }
-
-
-        [TestMethod, Timeout (1000)]
-        public void MaxThreads_WithConcurency_STA_InvokesGetValueFunctionOnce ()
-        {
-            MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test (Environment.ProcessorCount, sta: true);
-        }
-
-
-        [TestMethod, Timeout (1000)]
+        [TestMethod, Timeout (5000)]
         public void TwoThreads_WithConcurency_GetResultThrows_BothThrows ()
         {
             MultiThreadWithConcurency_GetResultThrows_BothThrows_Test (2, sta: false);
         }
 
 
-        [TestMethod, Timeout (1000)]
-        public void TenThreads_WithConcurency_GetResultThrows_BothThrows ()
+        [TestMethod, Timeout (5000)]
+        public void FiveThreads_WithConcurency_GetResultThrows_BothThrows ()
         {
-            MultiThreadWithConcurency_GetResultThrows_BothThrows_Test (10, sta: false);
+            MultiThreadWithConcurency_GetResultThrows_BothThrows_Test (5, sta: false);
         }
 
 
-        [TestMethod, Timeout (1000)]
-        public void MaxThreads_WithConcurency_GetResultThrows_BothThrows ()
+        [TestMethod, Timeout (5000)]
+        public Task TwoTasks_WithConcurency_InvokesGetValueFunctionOnce ()
         {
-            MultiThreadWithConcurency_GetResultThrows_BothThrows_Test (Environment.ProcessorCount, sta: false);
+            return MultiTaskWithConcurency_InvokesGetValueFunctionOnce_Test (2, sta: false);
         }
 
 
-        [TestMethod, Timeout (1000)]
-        public void TwoThreads_WithConcurency_STA_GetResultThrows_BothThrows ()
+        [TestMethod, Timeout (5000)]
+        public Task FiveTasks_WithConcurency_InvokesGetValueFunctionOnce ()
         {
-            MultiThreadWithConcurency_GetResultThrows_BothThrows_Test (2, sta: true);
+            return MultiTaskWithConcurency_InvokesGetValueFunctionOnce_Test (5, sta: false);
         }
 
 
-        [TestMethod, Timeout (1000)]
-        public void TenThreads_WithConcurency_STA_GetResultThrows_BothThrows ()
-        {
-            MultiThreadWithConcurency_GetResultThrows_BothThrows_Test (10, sta: true);
-        }
-
-
-        [TestMethod, Timeout (1000)]
-        public void MaxThreads_WithConcurency_STA_GetResultThrows_BothThrows ()
-        {
-            MultiThreadWithConcurency_GetResultThrows_BothThrows_Test (Environment.ProcessorCount, sta: true);
-        }
-
-
-        [TestMethod]
-        public void ResultDataIsNull_CachesIt ()
+        [TestMethod, Timeout (5000)]
+        public async Task ResultDataIsNull_CachesIt ()
         {
             // arrange
             var cache = new CacheProviderStub ();
+            var cache_key = Guid.NewGuid ().ToString ();
             var exec_count = 0;
 
             var create_result = new Func<Task<CachableResult<string>>>
@@ -148,8 +126,8 @@ namespace Rocks.Caching.Tests.GetWithLock
 
 
             // act
-            var result = cache.GetAsync ("Test", create_result).Result;
-            var result2 = cache.GetAsync ("Test", create_result).Result;
+            var result = await cache.GetAsync (cache_key, create_result);
+            var result2 = await cache.GetAsync (cache_key, create_result);
 
 
             // assert
@@ -157,14 +135,17 @@ namespace Rocks.Caching.Tests.GetWithLock
             result.Should ().BeNull ();
             result2.Should ().BeNull ();
             exec_count.Should ().Be (1);
+
+            GetWithLockExtensions.Locks.Should ().BeEmpty ();
         }
 
 
-        [TestMethod]
-        public void ResultDataIsNullAndDependencyKeysIncludeResult_DoesNotCache ()
+        [TestMethod, Timeout (5000)]
+        public async Task ResultDataIsNullAndDependencyKeysIncludeResult_DoesNotCache ()
         {
             // arrange
             var cache = new CacheProviderStub ();
+            var cache_key = Guid.NewGuid ().ToString ();
             var exec_count = 0;
 
             var create_result = new Func<Task<CachableResult<string>>>
@@ -181,8 +162,8 @@ namespace Rocks.Caching.Tests.GetWithLock
 
 
             // act
-            var result = cache.GetAsync ("Test", create_result).Result;
-            var result2 = cache.GetAsync ("Test", create_result).Result;
+            var result = await cache.GetAsync (cache_key, create_result);
+            var result2 = await cache.GetAsync (cache_key, create_result);
 
 
             // assert
@@ -190,14 +171,17 @@ namespace Rocks.Caching.Tests.GetWithLock
             result.Should ().BeNull ();
             result2.Should ().BeNull ();
             exec_count.Should ().Be (2);
+
+            GetWithLockExtensions.Locks.Should ().BeEmpty ();
         }
 
 
-        [TestMethod]
-        public void ResultIsNull_DoesNotCache ()
+        [TestMethod, Timeout (5000)]
+        public async Task ResultIsNull_DoesNotCache ()
         {
             // arrange
             var cache = new CacheProviderStub ();
+            var cache_key = Guid.NewGuid ().ToString ();
             var exec_count = 0;
 
             var create_result = new Func<Task<CachableResult<string>>>
@@ -209,8 +193,8 @@ namespace Rocks.Caching.Tests.GetWithLock
 
 
             // act
-            var result = cache.GetAsync ("Test", create_result).Result;
-            var result2 = cache.GetAsync ("Test", create_result).Result;
+            var result = await cache.GetAsync (cache_key, create_result);
+            var result2 = await cache.GetAsync (cache_key, create_result);
 
 
             // assert
@@ -218,14 +202,17 @@ namespace Rocks.Caching.Tests.GetWithLock
             result.Should ().BeNull ();
             result2.Should ().BeNull ();
             exec_count.Should ().Be (2);
+
+            GetWithLockExtensions.Locks.Should ().BeEmpty ();
         }
 
 
-        [TestMethod]
-        public void ResultIsNull_ValueTypeResult_DoesNotCache ()
+        [TestMethod, Timeout (5000)]
+        public async Task ResultIsNull_ValueTypeResult_DoesNotCache ()
         {
             // arrange
             var cache = new CacheProviderStub ();
+            var cache_key = Guid.NewGuid ().ToString ();
             var exec_count = 0;
 
             var create_result = new Func<Task<CachableResult<int>>>
@@ -237,8 +224,8 @@ namespace Rocks.Caching.Tests.GetWithLock
 
 
             // act
-            var result = cache.GetAsync ("Test", create_result).Result;
-            var result2 = cache.GetAsync ("Test", create_result).Result;
+            var result = await cache.GetAsync (cache_key, create_result);
+            var result2 = await cache.GetAsync (cache_key, create_result);
 
 
             // assert
@@ -246,40 +233,41 @@ namespace Rocks.Caching.Tests.GetWithLock
             result.Should ().Be (0);
             result2.Should ().Be (0);
             exec_count.Should ().Be (2);
+
+            GetWithLockExtensions.Locks.Should ().BeEmpty ();
         }
 
 
-        [TestMethod]
-        public void NestedCalls_ReturnsItem ()
+        [TestMethod, Timeout (5000)]
+        public async Task NestedCalls_ReturnsItem ()
         {
             // arrange
             var cache = new CacheProviderStub ();
+            var cache_key = Guid.NewGuid ().ToString ();
             var exec_count_a = 0;
             var exec_count_b = 0;
 
 
             // act
-            var result = cache.GetAsync
-                ("TestA",
-                 () => Task.Run
-                           (async () =>
-                                  {
-                                      exec_count_a++;
+            var result = await cache.GetAsync
+                                   (cache_key,
+                                    () => Task.Run
+                                              (async () =>
+                                                     {
+                                                         exec_count_a++;
 
-                                      var res = await cache.GetAsync
-                                                          ("TestB",
-                                                           () => Task.Run (() =>
-                                                                           {
-                                                                               exec_count_b++;
-                                                                               return new CachableResult<string>
-                                                                                   ("bbb",
-                                                                                    CachingParameters.FromDays (1));
-                                                                           }));
+                                                         var res = await cache.GetAsync
+                                                                             ("NestedCalls_ReturnsItem",
+                                                                              () => Task.Run (() =>
+                                                                                              {
+                                                                                                  exec_count_b++;
+                                                                                                  return new CachableResult<string>
+                                                                                                      ("bbb",
+                                                                                                       CachingParameters.FromDays (1));
+                                                                                              }));
 
-                                      return new CachableResult<string> (res,
-                                                                         new CachingParameters (TimeSpan.FromDays (1)));
-                                  }))
-                              .Result;
+                                                         return new CachableResult<string> (res, CachingParameters.FromDays (1));
+                                                     }));
 
 
             // assert
@@ -287,6 +275,7 @@ namespace Rocks.Caching.Tests.GetWithLock
             cache.Values.Should ().HaveCount (2);
             exec_count_a.Should ().Be (1);
             exec_count_b.Should ().Be (1);
+
             GetWithLockExtensions.Locks.Should ().BeEmpty ();
         }
 
@@ -298,42 +287,41 @@ namespace Rocks.Caching.Tests.GetWithLock
         {
             // arrange
             var cache = new CacheProviderStub ();
+            var cache_key = Guid.NewGuid ().ToString ();
 
             var exec_count = 0;
             var start_event = new ManualResetEvent (false);
 
-            Func<Task<CachableResult<string>>> create_result =
-                () => Task.Run (async () =>
-                                      {
-                                          Interlocked.Increment (ref exec_count);
-
-                                          await Task.Delay (TimeSpan.FromMilliseconds (500));
-
-                                          var result = new CachableResult<string> ("aaa", CachingParameters.FromMinutes (1));
-
-                                          return result;
-                                      });
-
             var results = new string[maxThreads];
 
-            var threads = Enumerable
-                .Range (0, maxThreads)
-                .Select (x =>
-                         {
-                             var thread = new Thread (() =>
-                                                      {
-                                                          start_event.WaitOne ();
-                                                          results[x] = cache.GetAsync ("Test", create_result).Result;
-                                                      });
+            var threads = Enumerable.Range (0, maxThreads).Select
+                (x =>
+                 {
+                     var thread = new Thread
+                         (() =>
+                          {
+                              start_event.WaitOne ();
+                              results[x] = cache.GetAsync
+                                  (cache_key,
+                                   () => Task.Run
+                                             (async () =>
+                                                    {
+                                                        await Task.Delay (TimeSpan.FromMilliseconds (100)).ConfigureAwait (false);
 
-                             thread.IsBackground = true;
+                                                        Interlocked.Increment (ref exec_count);
 
-                             if (sta)
-                                 thread.SetApartmentState (ApartmentState.STA);
+                                                        return new CachableResult<string> ("aaa", CachingParameters.FromMinutes (1));
+                                                    })).Result;
+                          });
 
-                             return thread;
-                         })
-                .ToList ();
+                     thread.IsBackground = true;
+
+                     if (sta)
+                         thread.SetApartmentState (ApartmentState.STA);
+
+                     return thread;
+                 })
+                                    .ToList ();
 
 
             // act
@@ -345,7 +333,7 @@ namespace Rocks.Caching.Tests.GetWithLock
             // assert
             cache.Values
                  .Should ().HaveCount (1)
-                 .And.ContainKey ("Test")
+                 .And.ContainKey (cache_key)
                  .WhichValue.Value.Should ().Be ("aaa");
 
             results.Should ().OnlyContain (x => x == "aaa");
@@ -359,49 +347,47 @@ namespace Rocks.Caching.Tests.GetWithLock
         {
             // arrange
             var cache = new CacheProviderStub ();
+            var cache_key = Guid.NewGuid ().ToString ();
 
             var exec_count = 0;
             var exception_count = 0;
             var start_event = new ManualResetEvent (false);
 
-            Func<Task<CachableResult<string>>> create_result =
-                () => Task.Run<CachableResult<string>> (async () =>
-                                                              {
-                                                                  Interlocked.Increment (ref exec_count);
+            var threads = Enumerable.Range (0, maxThreads).Select
+                (x =>
+                 {
+                     var thread = new Thread
+                         (() =>
+                          {
+                              start_event.WaitOne ();
 
-                                                                  await
-                                                                      Task.Delay (
-                                                                          TimeSpan.FromMilliseconds (
-                                                                              500));
+                              try
+                              {
+                                  cache.GetAsync<string> (cache_key,
+                                                          async () =>
+                                                                {
+                                                                    Interlocked.Increment (ref exec_count);
 
-                                                                  throw new InvalidOperationException ();
-                                                              });
+                                                                    await Task.Delay (TimeSpan.FromMilliseconds (100)).ConfigureAwait (false);
 
-            var threads = Enumerable
-                .Range (0, maxThreads)
-                .Select (x =>
-                         {
-                             var thread = new Thread (() =>
-                                                      {
-                                                          start_event.WaitOne ();
-                                                          try
-                                                          {
-                                                              cache.GetAsync ("Test", create_result).Wait ();
-                                                          }
-                                                          catch (AggregateException)
-                                                          {
-                                                              Interlocked.Increment (ref exception_count);
-                                                          }
-                                                      });
+                                                                    throw new InvalidOperationException ();
+                                                                })
+                                       .Wait ();
+                              }
+                              catch (AggregateException)
+                              {
+                                  Interlocked.Increment (ref exception_count);
+                              }
+                          });
 
-                             thread.IsBackground = true;
+                     thread.IsBackground = true;
 
-                             if (sta)
-                                 thread.SetApartmentState (ApartmentState.STA);
+                     if (sta)
+                         thread.SetApartmentState (ApartmentState.STA);
 
-                             return thread;
-                         })
-                .ToList ();
+                     return thread;
+                 })
+                                    .ToList ();
 
 
             // act
@@ -413,6 +399,62 @@ namespace Rocks.Caching.Tests.GetWithLock
             // assert
             exec_count.Should ().Be (1);
             exception_count.Should ().Be (maxThreads);
+
+            GetWithLockExtensions.Locks.Should ().BeEmpty ();
+        }
+
+
+        private static async Task MultiTaskWithConcurency_InvokesGetValueFunctionOnce_Test (int maxTasks, bool sta)
+        {
+            // arrange
+            var cache = new CacheProviderStub ();
+            var cache_key = Guid.NewGuid ().ToString ();
+
+            var exec_count = 0;
+            var start_event = new SemaphoreSlim (0, maxTasks);
+
+            var results = new string[maxTasks];
+
+            var task_factory = sta ? StaTaskScheduler.DefaultTaskFactory : Task.Factory;
+
+            var tasks = Enumerable.Range (0, maxTasks).Select
+                (x => task_factory.StartNew
+                          (async () =>
+                                 {
+                                     await start_event.WaitAsync ();
+
+                                     await Task.Delay (TimeSpan.FromMilliseconds (100));
+
+                                     Interlocked.Increment (ref exec_count);
+
+                                     var result = cache.GetAsync
+                                         (cache_key,
+                                          async () =>
+                                                {
+                                                    await Task.Delay (100).ConfigureAwait (false);
+
+                                                    return new CachableResult<string> ("aaa", CachingParameters.FromMinutes (10));
+                                                });
+
+                                     return result;
+                                 }
+                          ).Unwrap ()).ToList ();
+
+
+            // act
+            start_event.Release (maxTasks);
+            await Task.WhenAll (tasks);
+
+
+            // assert
+            cache.Values
+                 .Should ().HaveCount (1)
+                 .And.ContainKey (cache_key)
+                 .WhichValue.Value.Should ().Be ("aaa");
+
+            results.Should ().OnlyContain (x => x == "aaa");
+            exec_count.Should ().Be (1);
+
             GetWithLockExtensions.Locks.Should ().BeEmpty ();
         }
 
