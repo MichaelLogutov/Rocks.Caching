@@ -32,7 +32,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public void SingleThread_InvokesGetValueFunctionOnce ()
         {
             // arrange
@@ -65,49 +65,49 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public void TwoThreads_WithConcurency_InvokesGetValueFunctionOnce ()
         {
             MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test (2, sta: false);
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public void FiveThreads_WithConcurency_InvokesGetValueFunctionOnce ()
         {
             MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test (5, sta: false);
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public void TwoThreads_WithConcurency_GetResultThrows_BothThrows ()
         {
             MultiThreadWithConcurency_GetResultThrows_BothThrows_Test (2, sta: false);
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public void FiveThreads_WithConcurency_GetResultThrows_BothThrows ()
         {
             MultiThreadWithConcurency_GetResultThrows_BothThrows_Test (5, sta: false);
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public Task TwoTasks_WithConcurency_InvokesGetValueFunctionOnce ()
         {
             return MultiTaskWithConcurency_InvokesGetValueFunctionOnce_Test (2, sta: false);
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public Task FiveTasks_WithConcurency_InvokesGetValueFunctionOnce ()
         {
             return MultiTaskWithConcurency_InvokesGetValueFunctionOnce_Test (5, sta: false);
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public void ResultDataIsNull_CachesIt ()
         {
             // arrange
@@ -138,7 +138,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public void ResultDataIsNullAndDependencyKeysIncludeResult_DoesNotCache ()
         {
             // arrange
@@ -173,7 +173,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public void ResultIsNull_DoesNotCache ()
         {
             // arrange
@@ -204,7 +204,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public void ResultIsNull_ValueTypeResult_DoesNotCache ()
         {
             // arrange
@@ -235,7 +235,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (5000)]
+        [TestMethod, Microsoft.VisualStudio.TestTools.UnitTesting.Timeout (1000)]
         public void NestedCalls_ReturnsItem ()
         {
             // arrange

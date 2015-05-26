@@ -33,7 +33,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public async Task SingleThread_InvokesGetValueFunctionOnce ()
         {
             // arrange
@@ -66,49 +66,49 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public void TwoThreads_WithConcurency_InvokesGetValueFunctionOnce ()
         {
             MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test (2, sta: false);
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public void FiveThreads_WithConcurency_InvokesGetValueFunctionOnce ()
         {
             MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test (5, sta: false);
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public void TwoThreads_WithConcurency_GetResultThrows_BothThrows ()
         {
             MultiThreadWithConcurency_GetResultThrows_BothThrows_Test (2, sta: false);
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public void FiveThreads_WithConcurency_GetResultThrows_BothThrows ()
         {
             MultiThreadWithConcurency_GetResultThrows_BothThrows_Test (5, sta: false);
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public Task TwoTasks_WithConcurency_InvokesGetValueFunctionOnce ()
         {
             return MultiTaskWithConcurency_InvokesGetValueFunctionOnce_Test (2, sta: false);
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public Task FiveTasks_WithConcurency_InvokesGetValueFunctionOnce ()
         {
             return MultiTaskWithConcurency_InvokesGetValueFunctionOnce_Test (5, sta: false);
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public async Task ResultDataIsNull_CachesIt ()
         {
             // arrange
@@ -140,7 +140,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public async Task ResultDataIsNullAndDependencyKeysIncludeResult_DoesNotCache ()
         {
             // arrange
@@ -176,7 +176,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public async Task ResultIsNull_DoesNotCache ()
         {
             // arrange
@@ -207,7 +207,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public async Task ResultIsNull_ValueTypeResult_DoesNotCache ()
         {
             // arrange
@@ -238,7 +238,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [TestMethod, Timeout (5000)]
+        [TestMethod, Timeout (1000)]
         public async Task NestedCalls_ReturnsItem ()
         {
             // arrange
