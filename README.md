@@ -62,7 +62,7 @@ internal class UsersService : IUsersService
 ```
 
 ## Correct implementation of cache miss handling in multithreaded environment
-This issue explained here: [Caching in multi thread application – it’s not that simple](http://michaellogutov.com/caching-in-multi-thread-application-its-not-that-simple/)
+This issue explained here: [Caching in multi thread application – it’s not that simple](https://web.archive.org/web/20160513105334/http://michaellogutov.com/caching-in-multi-thread-application-its-not-that-simple/)
 
 For your code to correctly handle cache miss in multithreaded scenarios simply call Get extension method that works with ICacheProvider (and so supports any implementation of it):
 ```csharp
@@ -98,7 +98,7 @@ public async Task<int> GetUsersCountAsync ()
 ```
 
 ## More information
-You can read more about Rocks.Caching [here](http://michaellogutov.com/tag/rocks-caching/).
+You can read more about Rocks.Caching [here](https://web.archive.org/web/20160403191240/http://michaellogutov.com/tag/rocks-caching/).
 
 ## NuGet package
 You can install nuget package for Rocks.Caching here: https://www.nuget.org/packages/Rocks.Caching/
