@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <!-- Properties -->
     <PropertyGroup>
-        <DefaultItemExcludes>$(DefaultItemExcludes);**\*.v3.ncrunchproject;**\*.v3.ncrunchproject.user</DefaultItemExcludes>
+        <DefaultItemExcludes>$(DefaultItemExcludes);**\*.v3.ncrunchproject;**\*.v3.ncrunchproject.user
+        </DefaultItemExcludes>
         <TargetFramework>netstandard2.0</TargetFramework>
         <Version>2.0.0</Version>
         <FileVersion>$(Version)</FileVersion>
@@ -25,11 +26,5 @@
         <PackageReference Include="FastMember" Version="1.1.0"/>
         <PackageReference Include="JetBrains.Annotations" Version="11.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0"/>
-    </ItemGroup>
-    <!-- References -->
-    <ItemGroup>
-    </ItemGroup>
-    <!-- Projects -->
-    <ItemGroup>
     </ItemGroup>
 </Project>
