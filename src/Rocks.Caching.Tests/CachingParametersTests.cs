@@ -1,28 +1,26 @@
-﻿using System;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
 using Ploeh.AutoFixture;
+using Xunit;
 
 namespace Rocks.Caching.Tests
 {
-	[TestClass]
-	public class CachingParametersTests
-	{
-		[TestMethod]
-		public void Clone_ReturnsDeepClone ()
-		{
-			// arrange
-			var fixture = new Fixture ();
+    public class CachingParametersTests
+    {
+        [Fact]
+        public void Clone_ReturnsDeepClone()
+        {
+            // arrange
+            var fixture = new Fixture();
 
-			var source = fixture.Create<CachingParameters> ();
-
-
-			// act
-			var result = source.Clone ();
+            var source = fixture.Create<CachingParameters>();
 
 
-			// assert
-			result.ShouldBeEquivalentTo (source);
-		}
-	}
+            // act
+            var result = source.Clone();
+
+
+            // assert
+            result.ShouldBeEquivalentTo(source);
+        }
+    }
 }

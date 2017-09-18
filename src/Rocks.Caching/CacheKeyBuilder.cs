@@ -10,8 +10,6 @@ namespace Rocks.Caching
 {
 	public static class CacheKeyBuilder
 	{
-		#region Static methods
-
 		/// <summary>
 		///     Creates a cache key in "{args1}{args2}{args3} ... ect." format.
 		/// </summary>
@@ -430,9 +428,6 @@ namespace Rocks.Caching
 			return sb.ToString ();
 		}
 
-		#endregion
-
-		#region Private methods
 
 		[DebuggerStepThrough]
 		private static void Append (StringBuilder sb, object v)
@@ -478,7 +473,5 @@ namespace Rocks.Caching
 
 			sb.Append (':');
 		}
-
-		#endregion
 	}
 }

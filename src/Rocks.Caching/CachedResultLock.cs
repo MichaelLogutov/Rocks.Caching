@@ -3,31 +3,18 @@ using JetBrains.Annotations;
 
 namespace Rocks.Caching
 {
-	internal class CachedResultLock
-	{
-		#region Private fields
+    internal class CachedResultLock
+    {
+        public CachedResultLock()
+        {
+            this.Mutex = new SemaphoreSlim(1, 1);
+        }
 
-		private readonly SemaphoreSlim mutex;
 
-		#endregion
+        [NotNull]
+        public SemaphoreSlim Mutex { get; }
 
-		#region Construct
-
-		public CachedResultLock ()
-		{
-			this.mutex = new SemaphoreSlim (1, 1);
-		}
-
-		#endregion
-
-		#region Public properties
-
-		[NotNull]
-		public SemaphoreSlim Mutex { get { return this.mutex; } }
-
-		public bool IsExecuted { get; set; }
-		public object Result { get; set; }
-
-		#endregion
-	}
+        public bool IsExecuted { get; set; }
+        public object Result { get; set; }
+    }
 }

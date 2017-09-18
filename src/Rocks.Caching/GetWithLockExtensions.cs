@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
@@ -12,14 +11,10 @@ namespace Rocks.Caching
     /// </summary>
     public static class GetWithLockExtensions
     {
-        #region Private fields
+        private static readonly object EmptyResult = new object();
 
-        private static readonly object EmptyResult = new object ();
-        internal static readonly ConcurrentDictionary<string, CachedResultLock> Locks = new ConcurrentDictionary<string, CachedResultLock> ();
+        internal static readonly ConcurrentDictionary<string, CachedResultLock> Locks = new ConcurrentDictionary<string, CachedResultLock>();
 
-        #endregion
-
-        #region Static methods
 
         /// <summary>
         ///     Gets cached object.
@@ -31,12 +26,14 @@ namespace Rocks.Caching
         ///     Instance of <see cref="ICachable&lt;T&gt;" /> that can provide data required
         ///     for retrieval object value from <paramref name="cache" />. Can not be null.
         /// </param>
-        public static T Get<T> ([NotNull] this ICacheProvider cache, [NotNull] ICachable<T> cachableObject)
+        public static T Get<T>([NotNull] this ICacheProvider cache, [NotNull] ICachable<T> cachableObject)
         {
             if (cachableObject == null)
-                throw new ArgumentNullException ("cachableObject");
+            {
+                throw new ArgumentNullException("cachableObject");
+            }
 
-            return cache.Get (cachableObject.GetCacheKey (), cachableObject.GetCachedValue);
+            return cache.Get(cachableObject.GetCacheKey(), cachableObject.GetCachedValue);
         }
 
 
@@ -52,45 +49,47 @@ namespace Rocks.Caching
         ///     A callback that should return data used in caching object
         ///     if it was not found in <paramref name="cache" />. Can not be null.
         /// </param>
-        public static T Get<T> ([NotNull] this ICacheProvider cache, [NotNull] string key, [NotNull] Func<CachableResult<T>> createResult)
+        public static T Get<T>([NotNull] this ICacheProvider cache,
+                               [NotNull] string key,
+                               [NotNull] Func<CachableResult<T>> createResult)
         {
             if (cache == null)
-                throw new ArgumentNullException ("cache");
+                throw new ArgumentNullException("cache");
 
-            if (string.IsNullOrEmpty (key))
-                throw new ArgumentNullException ("key");
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException("key");
 
             if (createResult == null)
-                throw new ArgumentNullException ("createResult");
+                throw new ArgumentNullException("createResult");
 
 
             // first - try the real cache
-            var res = cache.Get (key);
+            var res = cache.Get(key);
             if (res == null)
             {
                 // cache miss - obtain lock to execute createResult
                 // only once among possible concurrent requests
-                var cached_result_lock = AcquireCachedResultLock (key);
+                var cached_result_lock = AcquireCachedResultLock(key);
 
                 if (!cached_result_lock.IsExecuted)
                 {
                     try
                     {
-                        var result = createResult ();
-                        ProceedResult (cache, key, cached_result_lock, result);
+                        var result = createResult();
+                        ProceedResult(cache, key, cached_result_lock, result);
                     }
                     catch (Exception ex)
                     {
-                        ProceedExceptionResult (cached_result_lock, ex);
+                        ProceedExceptionResult(cached_result_lock, ex);
                         throw;
                     }
                     finally
                     {
-                        ReleaseCachedResultLock (key, cached_result_lock);
+                        ReleaseCachedResultLock(key, cached_result_lock);
                     }
                 }
                 else
-                    ReleaseCachedResultLock (key, cached_result_lock);
+                    ReleaseCachedResultLock(key, cached_result_lock);
 
                 var exception_result = cached_result_lock.Result as ExceptionResult;
                 if (exception_result != null)
@@ -102,7 +101,7 @@ namespace Rocks.Caching
             if (res != EmptyResult && res != null)
                 return (T) res;
 
-            return default (T);
+            return default(T);
         }
 
 
@@ -118,47 +117,47 @@ namespace Rocks.Caching
         ///     A callback that should return data used in caching object
         ///     if it was not found in <paramref name="cache" />. Can not be null.
         /// </param>
-        public static async Task<T> GetAsync<T> ([NotNull] this ICacheProvider cache,
-                                                 [NotNull] string key,
-                                                 [NotNull] Func<Task<CachableResult<T>>> createResult)
+        public static async Task<T> GetAsync<T>([NotNull] this ICacheProvider cache,
+                                                [NotNull] string key,
+                                                [NotNull] Func<Task<CachableResult<T>>> createResult)
         {
             if (cache == null)
-                throw new ArgumentNullException ("cache");
+                throw new ArgumentNullException("cache");
 
-            if (string.IsNullOrEmpty (key))
-                throw new ArgumentNullException ("key");
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException("key");
 
             if (createResult == null)
-                throw new ArgumentNullException ("createResult");
+                throw new ArgumentNullException("createResult");
 
 
             // first - try the real cache
-            var res = cache.Get (key);
+            var res = cache.Get(key);
             if (res == null)
             {
                 // cache miss - obtain lock to execute createResult
                 // only once among possible concurrent requests
-                var cached_result_lock = AcquireCachedResultLock (key);
+                var cached_result_lock = AcquireCachedResultLock(key);
 
                 if (!cached_result_lock.IsExecuted)
                 {
                     try
                     {
-                        var result = await createResult ().ConfigureAwait (false);
-                        ProceedResult (cache, key, cached_result_lock, result);
+                        var result = await createResult().ConfigureAwait(false);
+                        ProceedResult(cache, key, cached_result_lock, result);
                     }
                     catch (Exception ex)
                     {
-                        ProceedExceptionResult (cached_result_lock, ex);
+                        ProceedExceptionResult(cached_result_lock, ex);
                         throw;
                     }
                     finally
                     {
-                        ReleaseCachedResultLock (key, cached_result_lock);
+                        ReleaseCachedResultLock(key, cached_result_lock);
                     }
                 }
                 else
-                    ReleaseCachedResultLock (key, cached_result_lock);
+                    ReleaseCachedResultLock(key, cached_result_lock);
 
                 var exception_result = cached_result_lock.Result as ExceptionResult;
                 if (exception_result != null)
@@ -170,33 +169,31 @@ namespace Rocks.Caching
             if (res != EmptyResult && res != null)
                 return (T) res;
 
-            return default (T);
+            return default(T);
         }
 
-        #endregion
 
-        #region Private methods
-
-        private static CachedResultLock AcquireCachedResultLock (string key)
+        private static CachedResultLock AcquireCachedResultLock(string key)
         {
-            var result = Locks.GetOrAdd (key, x => new CachedResultLock ());
+            var result = Locks.GetOrAdd(key, x => new CachedResultLock());
 
-            result.Mutex.Wait ();
+            result.Mutex.Wait();
 
             return result;
         }
 
 
-        private static void ReleaseCachedResultLock (string key, CachedResultLock cachedResultLock)
+        private static void ReleaseCachedResultLock(string key, CachedResultLock cachedResultLock)
         {
-            cachedResultLock.Mutex.Release ();
+            cachedResultLock.Mutex.Release();
 
             CachedResultLock tmp;
-            Locks.TryRemove (key, out tmp);
+            Locks.TryRemove(key, out tmp);
         }
 
 
-        private static void ProceedResult<T> (ICacheProvider cache, string key, CachedResultLock cachedResultLock, CachableResult<T> cachableResult)
+        private static void ProceedResult<T>(ICacheProvider cache, string key, CachedResultLock cachedResultLock,
+            CachableResult<T> cachableResult)
         {
             object result = null;
 
@@ -209,12 +206,12 @@ namespace Rocks.Caching
                 // with dependeny key calculated for null object which is incorrect behavior.
 
                 result = cachableResult.Result;
-                if (result == null && (cachableResult.Parameters.DependencyKeys == null ||
-                                       !cachableResult.Parameters.DependencyKeys.Any () ||
-                                       !cachableResult.DependencyKeysIncludeResult))
+                if (result == null)
+                {
                     result = EmptyResult;
+                }
 
-                cache.Add (key, result, cachableResult.Parameters);
+                cache.Add(key, result, cachableResult.Parameters);
             }
 
             cachedResultLock.Result = result;
@@ -222,14 +219,12 @@ namespace Rocks.Caching
         }
 
 
-        private static void ProceedExceptionResult (CachedResultLock cachedResultLock, Exception exception)
+        private static void ProceedExceptionResult(CachedResultLock cachedResultLock, Exception exception)
         {
-            var result = new ExceptionResult { Exception = exception };
+            var result = new ExceptionResult {Exception = exception};
 
             cachedResultLock.Result = result;
             cachedResultLock.IsExecuted = true;
         }
-
-        #endregion
     }
 }
