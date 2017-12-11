@@ -26,12 +26,12 @@ namespace Rocks.Caching.Tests
         {
             {
                 var res = CacheDependencyKeyBuilder.CreateMany("A");
-                Assert.Equal(1, res.Length);
+                Assert.Single(res);
                 Assert.Equal("{" + CacheDependencyKeyBuilder.DependencyRootCacheKeyPrefix + "A}", res[0]);
             }
             {
                 var res = CacheDependencyKeyBuilder.CreateMany("A", "B");
-                Assert.Equal(1, res.Length);
+                Assert.Single(res);
                 Assert.Equal("{" + CacheDependencyKeyBuilder.DependencyRootCacheKeyPrefix + "A:B}", res[0]);
             }
             {
@@ -50,12 +50,12 @@ namespace Rocks.Caching.Tests
             }
             {
                 var res = CacheDependencyKeyBuilder.CreateMany("A", "B", null);
-                Assert.Equal(1, res.Length);
+                Assert.Single(res);
                 Assert.Equal("{" + CacheDependencyKeyBuilder.DependencyRootCacheKeyPrefix + "A:B}", res[0]);
             }
             {
                 var res = CacheDependencyKeyBuilder.CreateMany("A", null, null);
-                Assert.Equal(1, res.Length);
+                Assert.Single(res);
                 Assert.Equal("{" + CacheDependencyKeyBuilder.DependencyRootCacheKeyPrefix + "A}", res[0]);
             }
             {

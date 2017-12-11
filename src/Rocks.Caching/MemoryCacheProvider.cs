@@ -1,5 +1,10 @@
 ﻿using System;
+#if NET461 || NET471
+using System.Runtime.Caching;
+using System.Linq;
+#elif NETSTANDARD2_0
 using Microsoft.Extensions.Caching.Memory;
+#endif
 
 namespace Rocks.Caching
 {
@@ -8,8 +13,11 @@ namespace Rocks.Caching
     /// </summary>
     public class MemoryCacheProvider : ICacheProvider
     {
+#if NET461 || NET471
+        private readonly MemoryCache cache = MemoryCache.Default;
+#elif NETSTANDARD2_0
         private MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
-
+#endif  
 
         /// <summary>
         ///     Gets cached object by <paramref name="key" />.
@@ -31,9 +39,7 @@ namespace Rocks.Caching
         public void Add(string key, object value, CachingParameters parameters)
         {
             if (parameters == null)
-            {
-                throw new ArgumentNullException("parameters");
-            }
+                throw new ArgumentNullException(nameof(parameters));
 
             if (value == null)
             {
@@ -42,27 +48,40 @@ namespace Rocks.Caching
             }
 
             if (parameters.NoCaching)
-            {
                 return;
-            }
 
-            var memoryCacheEntryOptions = new MemoryCacheEntryOptions();
+#if NET461 || NET471
+            var cache_item_policy = new CacheItemPolicy ();
 
             if (parameters.Priority == CachePriority.NotRemovable)
+                cache_item_policy.Priority = CacheItemPriority.NotRemovable;
+
+            if (!parameters.Sliding)
+                cache_item_policy.AbsoluteExpiration = DateTimeOffset.Now + parameters.Expiration;
+            else
+                cache_item_policy.SlidingExpiration = parameters.Expiration;
+
+            this.cache.Set (new CacheItem (key, value), cache_item_policy);
+            
+#elif NETSTANDARD2_0
+            var memory_cache_entry_options = new MemoryCacheEntryOptions();
+    
+            if (parameters.Priority == CachePriority.NotRemovable)
             {
-                memoryCacheEntryOptions.Priority = CacheItemPriority.NeverRemove;
+                memory_cache_entry_options.Priority = CacheItemPriority.NeverRemove;
             }
 
             if (!parameters.Sliding)
             {
-                memoryCacheEntryOptions.AbsoluteExpiration = DateTimeOffset.Now + parameters.Expiration;
+                memory_cache_entry_options.AbsoluteExpiration = DateTimeOffset.Now + parameters.Expiration;
             }
             else
             {
-                memoryCacheEntryOptions.SlidingExpiration = parameters.Expiration;
+                memory_cache_entry_options.SlidingExpiration = parameters.Expiration;
             }
 
-            this.cache.Set(key, value, memoryCacheEntryOptions);
+            this.cache.Set(key, value, memory_cache_entry_options);
+#endif 
         }
 
 
@@ -71,12 +90,22 @@ namespace Rocks.Caching
         /// </summary>
         public void Clear()
         {
-            var newCache = new MemoryCache(new MemoryCacheOptions());
-            var oldCache = this.cache;
+#if NET461 || NET471
+            this.cache.Trim (100);
 
-            this.cache = newCache;
+            // current implementation of MemoryCache does not clears 100% of items despite of method signature
+            // so we have to clean up the rest using expensive keys enumeration which implies lock
+            var remain_keys = this.cache.Select (x => x.Key).ToList ();
+            foreach (var key in remain_keys)
+                this.cache.Remove (key);
+#elif NETSTANDARD2_0
+            var new_cache = new MemoryCache(new MemoryCacheOptions());
+            var old_cache = this.cache;
 
-            oldCache.Dispose();
+            this.cache = new_cache;
+
+            old_cache.Dispose();
+#endif
         }
 
 

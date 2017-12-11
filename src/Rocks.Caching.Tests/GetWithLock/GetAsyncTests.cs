@@ -3,13 +3,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NCrunch.Framework;
 using Rocks.Caching.Tests.Stubs;
 using Xunit;
 
 namespace Rocks.Caching.Tests.GetWithLock
 {
-    [Serial, ExclusivelyUses("GetWithLockExtensions.Locks")]
+    [Collection("GetWithLockExtensions.Locks")]
     public class GetAsyncTests
     {
         public GetAsyncTests()
@@ -18,7 +17,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [Fact, Timeout(1000)]
+        [Fact]
         public async Task SingleThread_InvokesGetValueFunctionOnce()
         {
             // arrange
@@ -51,28 +50,28 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [Fact, Timeout(1000)]
+        [Fact]
         public void TwoThreads_WithConcurency_InvokesGetValueFunctionOnce()
         {
             MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test(2, false);
         }
 
 
-        [Fact, Timeout(1000)]
+        [Fact]
         public void FiveThreads_WithConcurency_InvokesGetValueFunctionOnce()
         {
             MultiThreadWithConcurency_InvokesGetValueFunctionOnce_Test(5, false);
         }
 
 
-        [Fact, Timeout(1000)]
+        [Fact]
         public void TwoThreads_WithConcurency_GetResultThrows_BothThrows()
         {
             MultiThreadWithConcurency_GetResultThrows_BothThrows_Test(2, false);
         }
 
 
-        [Fact, Timeout(1000)]
+        [Fact]
         public void FiveThreads_WithConcurency_GetResultThrows_BothThrows()
         {
             MultiThreadWithConcurency_GetResultThrows_BothThrows_Test(5, false);
@@ -93,7 +92,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [Fact, Timeout(1000)]
+        [Fact]
         public async Task ResultDataIsNull_CachesIt()
         {
             // arrange
@@ -125,7 +124,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [Fact, Timeout(1000)]
+        [Fact]
         public async Task ResultIsNull_DoesNotCache()
         {
             // arrange
@@ -156,7 +155,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [Fact, Timeout(1000)]
+        [Fact]
         public async Task ResultIsNull_ValueTypeResult_DoesNotCache()
         {
             // arrange
@@ -187,7 +186,7 @@ namespace Rocks.Caching.Tests.GetWithLock
         }
 
 
-        [Fact, Timeout(1000)]
+        [Fact]
         public async Task NestedCalls_ReturnsItem()
         {
             // arrange
