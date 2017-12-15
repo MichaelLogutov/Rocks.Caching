@@ -1,25 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <!-- Properties -->
-  <PropertyGroup>
-    <DefaultItemExcludes>$(DefaultItemExcludes);**\*.v3.ncrunchproject;**\*.v3.ncrunchproject.user
+    <!-- Properties -->
+    <PropertyGroup>
+        <DefaultItemExcludes>$(DefaultItemExcludes);**\*.v3.ncrunchproject;**\*.v3.ncrunchproject.user;**\*.nupkg
         </DefaultItemExcludes>
-    <TargetFrameworks>net461;net471;netstandard2.0</TargetFrameworks>
-  </PropertyGroup>
-  <!-- Properties for NuGet package -->
-  <PropertyGroup>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
-  <!-- NuGet packages -->
-  <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="3.51.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
-    <PackageReference Include="Moq" Version="4.7.145" />
-    <PackageReference Include="xunit" Version="2.3.1" />
-    <PackageReference Include="FluentAssertions" Version="4.19.4" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
-  </ItemGroup>
-  <!-- Projects -->
-  <ItemGroup>
-    <ProjectReference Include="..\Rocks.Caching\Rocks.Caching.csproj" />
-  </ItemGroup>
+        <TargetFrameworks>net461;net471;netstandard2.0</TargetFrameworks>
+    </PropertyGroup>
+    <!-- Properties for NuGet package -->
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+    <!-- NuGet packages -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0"/>
+        <PackageReference Include="xunit" Version="2.3.1"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1"/>
+        <PackageReference Include="AutoFixture" Version="3.51.0"/>
+        <PackageReference Include="FluentAssertions" Version="4.19.4"/>
+        <PackageReference Include="Moq" Version="4.7.145"/>
+    </ItemGroup>
+    <!-- Projects -->
+    <ItemGroup>
+        <ProjectReference Include="..\Rocks.Caching\Rocks.Caching.csproj"/>
+    </ItemGroup>
 </Project>
