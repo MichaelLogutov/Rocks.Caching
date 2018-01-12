@@ -4,7 +4,7 @@
         <DefaultItemExcludes>$(DefaultItemExcludes);**\*.v3.ncrunchproject;**\*.v3.ncrunchproject.user;**\*.nupkg
         </DefaultItemExcludes>
         <TargetFrameworks>net461;net471;netstandard2.0</TargetFrameworks>
-        <Version>2.2.0</Version>
+        <Version>2.3.0</Version>
         <FileVersion>$(Version)</FileVersion>
         <AssemblyVersion>$(Version)</AssemblyVersion>
         <Authors>Michael Logutov</Authors>
