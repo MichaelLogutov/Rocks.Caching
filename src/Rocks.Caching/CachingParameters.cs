@@ -19,7 +19,6 @@ namespace Rocks.Caching
         /// </summary>
         public CachingParameters(TimeSpan expiration,
                                  bool sliding = false,
-                                 IEnumerable<string> dependencyKeys = null,
                                  CachePriority? priority = null)
         {
             this.Expiration = expiration;
@@ -69,10 +68,9 @@ namespace Rocks.Caching
         /// </summary>
         public static CachingParameters FromMilliseconds(double milliseconds,
                                                          bool sliding = false,
-                                                         IEnumerable<string> dependencyKeys = null,
                                                          CachePriority? priority = null)
         {
-            return new CachingParameters(TimeSpan.FromMilliseconds(milliseconds), sliding, dependencyKeys, priority);
+            return new CachingParameters(TimeSpan.FromMilliseconds(milliseconds), sliding, priority);
         }
 
 
@@ -81,10 +79,9 @@ namespace Rocks.Caching
         /// </summary>
         public static CachingParameters FromSeconds(double seconds,
                                                     bool sliding = false,
-                                                    IEnumerable<string> dependencyKeys = null,
                                                     CachePriority? priority = null)
         {
-            return new CachingParameters(TimeSpan.FromSeconds(seconds), sliding, dependencyKeys, priority);
+            return new CachingParameters(TimeSpan.FromSeconds(seconds), sliding, priority);
         }
 
 
@@ -93,10 +90,9 @@ namespace Rocks.Caching
         /// </summary>
         public static CachingParameters FromMinutes(double minutes,
                                                     bool sliding = false,
-                                                    IEnumerable<string> dependencyKeys = null,
                                                     CachePriority? priority = null)
         {
-            return new CachingParameters(TimeSpan.FromMinutes(minutes), sliding, dependencyKeys, priority);
+            return new CachingParameters(TimeSpan.FromMinutes(minutes), sliding, priority);
         }
 
 
@@ -105,10 +101,9 @@ namespace Rocks.Caching
         /// </summary>
         public static CachingParameters FromHours(double hours,
                                                   bool sliding = false,
-                                                  IEnumerable<string> dependencyKeys = null,
                                                   CachePriority? priority = null)
         {
-            return new CachingParameters(TimeSpan.FromHours(hours), sliding, dependencyKeys, priority);
+            return new CachingParameters(TimeSpan.FromHours(hours), sliding, priority);
         }
 
 
@@ -117,10 +112,9 @@ namespace Rocks.Caching
         /// </summary>
         public static CachingParameters FromDays(double days,
                                                  bool sliding = false,
-                                                 IEnumerable<string> dependencyKeys = null,
                                                  CachePriority? priority = null)
         {
-            return new CachingParameters(TimeSpan.FromDays(days), sliding, dependencyKeys, priority);
+            return new CachingParameters(TimeSpan.FromDays(days), sliding, priority);
         }
 
 
