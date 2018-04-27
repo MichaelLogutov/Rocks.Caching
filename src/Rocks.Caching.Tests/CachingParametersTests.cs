@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Ploeh.AutoFixture;
+using AutoFixture;
 using Xunit;
 
 namespace Rocks.Caching.Tests
@@ -20,7 +20,7 @@ namespace Rocks.Caching.Tests
 
 
             // assert
-            result.ShouldBeEquivalentTo(source);
+            result.Should().BeEquivalentTo(source);
         }
     }
 }

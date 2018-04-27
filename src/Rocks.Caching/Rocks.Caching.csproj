@@ -1,49 +1,45 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <!-- Properties -->
-    <PropertyGroup>
-        <DefaultItemExcludes>$(DefaultItemExcludes);**\*.v3.ncrunchproject;**\*.v3.ncrunchproject.user;**\*.nupkg
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Properties -->
+  <PropertyGroup>
+    <DefaultItemExcludes>$(DefaultItemExcludes);**\*.v3.ncrunchproject;**\*.v3.ncrunchproject.user;**\*.nupkg
         </DefaultItemExcludes>
-        <TargetFrameworks>net461;net471;netstandard2.0</TargetFrameworks>
-        <Version>3.1.0</Version>
-        <FileVersion>$(Version)</FileVersion>
-        <AssemblyVersion>$(Version)</AssemblyVersion>
-        <Authors>Michael Logutov</Authors>
-        <Company>Michael Logutov</Company>
-        <Description>Caching abstraction library.</Description>
-        <Copyright>Copyright © Michael Logutov 2018</Copyright>
-        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Rocks.Caching.xml</DocumentationFile>
-        <NoWarn>1591</NoWarn>
-    </PropertyGroup>
-    <!-- Properties for NuGet package -->
-    <PropertyGroup>
-        <IsPackable>true</IsPackable>
-        <PackageId>Rocks.Caching</PackageId>
-        <PackageVersion>$(Version)</PackageVersion>
-        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <PackageProjectUrl>https://github.com/MichaelLogutov/Rocks.Caching</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/MichaelLogutov/Rocks.Caching/blob/master/LICENSE</PackageLicenseUrl>
-    </PropertyGroup>
-    <!-- NuGet packages -->
+    <TargetFrameworks>net461;net471;netstandard2.0</TargetFrameworks>
+    <Version>3.2.0</Version>
+    <FileVersion>$(Version)</FileVersion>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <Authors>Michael Logutov</Authors>
+    <Company>Michael Logutov</Company>
+    <Description>Caching abstraction library.</Description>
+    <Copyright>Copyright © Michael Logutov 2018</Copyright>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Rocks.Caching.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <!-- Properties for NuGet package -->
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>Rocks.Caching</PackageId>
+    <PackageVersion>$(Version)</PackageVersion>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/MichaelLogutov/Rocks.Caching</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/MichaelLogutov/Rocks.Caching/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/MichaelLogutov/Rocks.Caching</RepositoryUrl>
+    <PackageReleaseNotes>3.2.0 (2018-04-27)
+
+Update packages</PackageReleaseNotes>
+  </PropertyGroup>
+  <!-- NuGet packages -->
+  <ItemGroup>
+    <PackageReference Include="FastMember" Version="1.3.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.1" />
+  </ItemGroup>
+  <!-- NuGet packages for .NET Framework -->
+  <!-- NuGet packages for .NET Core -->
+  <!-- Documentation -->
+  <Target Name="IncludeDocumentationFiles" BeforeTargets="PrepareForPublish">
     <ItemGroup>
-        <PackageReference Include="FastMember" Version="1.3.0"/>
-        <PackageReference Include="JetBrains.Annotations" Version="11.0.0"/>
+      <DocumentationFiles Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
     </ItemGroup>
-    <!-- NuGet packages for .NET Framework -->
-    <ItemGroup Condition="$(TargetFramework) == 'net461'">
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2"/>
-    </ItemGroup>
-    <ItemGroup Condition="$(TargetFramework) == 'net471'">
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2"/>
-    </ItemGroup>
-    <!-- NuGet packages for .NET Core -->
-    <ItemGroup Condition="$(TargetFramework) == 'netstandard2.0'">
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0"/>
-    </ItemGroup>
-    <!-- Documentation -->
-    <Target Name="IncludeDocumentationFiles" BeforeTargets="PrepareForPublish">
-        <ItemGroup>
-            <DocumentationFiles Include="bin\$(Configuration)\$(TargetFramework)\*.xml"/>
-        </ItemGroup>
-        <Copy SourceFiles="@(DocumentationFiles)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false"/>
-    </Target>
+    <Copy SourceFiles="@(DocumentationFiles)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
+  </Target>
 </Project>
