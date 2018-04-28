@@ -1,8 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Caching.Memory;
-#if NET461 || NET471
-using System.Linq;
-#endif
 
 namespace Rocks.Caching
 {

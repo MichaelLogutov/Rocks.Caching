@@ -7,8 +7,7 @@ namespace Rocks.Caching
     ///     A class that represent resulting data that can be cached with specified parameters.
     /// </summary>
     /// <typeparam name="T">Type of the data.</typeparam>
-    [DebuggerDisplay(
-        "{Result}, Expiration = {Parameters.Expiration}, Sliding = {Parameters.Sliding}, Priority = {Parameters.Priority}")]
+    [DebuggerDisplay("{Result}, Expiration = {Parameters.Expiration}, Sliding = {Parameters.Sliding}, Priority = {Parameters.Priority}")]
     public class CachableResult<T>
     {
         /// <summary>
@@ -20,7 +19,7 @@ namespace Rocks.Caching
         {
             if (parameters == null)
             {
-                throw new ArgumentNullException("parameters");
+                throw new ArgumentNullException(nameof(parameters));
             }
 
             this.Result = result;

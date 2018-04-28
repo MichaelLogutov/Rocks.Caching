@@ -30,7 +30,7 @@ namespace Rocks.Caching
         {
             if (cachableObject == null)
             {
-                throw new ArgumentNullException("cachableObject");
+                throw new ArgumentNullException(nameof(cachableObject));
             }
 
             return cache.Get(cachableObject.GetCacheKey(), cachableObject.GetCachedValue);
@@ -54,13 +54,13 @@ namespace Rocks.Caching
                                [NotNull] Func<CachableResult<T>> createResult)
         {
             if (cache == null)
-                throw new ArgumentNullException("cache");
+                throw new ArgumentNullException(nameof(cache));
 
             if (string.IsNullOrEmpty(key))
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
 
             if (createResult == null)
-                throw new ArgumentNullException("createResult");
+                throw new ArgumentNullException(nameof(createResult));
 
 
             // first - try the real cache
@@ -122,13 +122,13 @@ namespace Rocks.Caching
                                                 [NotNull] Func<Task<CachableResult<T>>> createResult)
         {
             if (cache == null)
-                throw new ArgumentNullException("cache");
+                throw new ArgumentNullException(nameof(cache));
 
             if (string.IsNullOrEmpty(key))
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
 
             if (createResult == null)
-                throw new ArgumentNullException("createResult");
+                throw new ArgumentNullException(nameof(createResult));
 
 
             // first - try the real cache

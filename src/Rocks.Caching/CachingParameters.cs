@@ -31,7 +31,7 @@ namespace Rocks.Caching
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
 
             this.Expiration = other.Expiration;
