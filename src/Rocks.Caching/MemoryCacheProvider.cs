@@ -1,5 +1,10 @@
 ﻿using System;
+
+#if NET471
+using System.Runtime.Caching;
+#elif NETSTANDARD2_0
 using Microsoft.Extensions.Caching.Memory;
+#endif
 
 namespace Rocks.Caching
 {
@@ -8,7 +13,12 @@ namespace Rocks.Caching
     /// </summary>
     public class MemoryCacheProvider : ICacheProvider
     {
+#if NET471
+        // ReSharper disable once AssignNullToNotNullAttribute
+        private MemoryCache cache = new MemoryCache(typeof(MemoryCacheProvider).FullName);
+#elif NETSTANDARD2_0
         private MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+#endif
 
         /// <summary>
         ///     Gets cached object by <paramref name="key" />.
@@ -41,23 +51,24 @@ namespace Rocks.Caching
             if (parameters.NoCaching)
                 return;
 
-            var memory_cache_entry_options = new MemoryCacheEntryOptions();
+#if NET471
+            var options = new CacheItemPolicy();
     
             if (parameters.Priority == CachePriority.NotRemovable)
-            {
-                memory_cache_entry_options.Priority = CacheItemPriority.NeverRemove;
-            }
-
+                options.Priority = CacheItemPriority.NotRemovable;
+#elif NETSTANDARD2_0
+            var options = new MemoryCacheEntryOptions();
+    
+            if (parameters.Priority == CachePriority.NotRemovable)
+                options.Priority = CacheItemPriority.NeverRemove;
+#endif
+            
             if (!parameters.Sliding)
-            {
-                memory_cache_entry_options.AbsoluteExpiration = DateTimeOffset.Now + parameters.Expiration;
-            }
+                options.AbsoluteExpiration = DateTimeOffset.Now + parameters.Expiration;
             else
-            {
-                memory_cache_entry_options.SlidingExpiration = parameters.Expiration;
-            }
+                options.SlidingExpiration = parameters.Expiration;
 
-            this.cache.Set(key, value, memory_cache_entry_options);
+            this.cache.Set(key, value, options);
         }
 
 
@@ -66,7 +77,12 @@ namespace Rocks.Caching
         /// </summary>
         public void Clear()
         {
+#if NET471
+            // ReSharper disable once AssignNullToNotNullAttribute
+            var new_cache = new MemoryCache(typeof(MemoryCacheProvider).FullName);
+#elif NETSTANDARD2_0
             var new_cache = new MemoryCache(new MemoryCacheOptions());
+#endif
             var old_cache = this.cache;
 
             this.cache = new_cache;
